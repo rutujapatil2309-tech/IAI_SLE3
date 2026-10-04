@@ -1,90 +1,230 @@
-# SLE-3: Graph Search System Architecture
+# SLE-3: Architectural Design Using Full C4 Model
 
+**Course:** 02AML204 – Introduction to Artificial Intelligence  
 **Student:** Rutuja Patil  
-**Project:** Graph Search using BFS and DFS
+**System:** Graph Search System using BFS and DFS  
+**Previous work:** SLE-2 BFS vs DFS performance comparison
 
-## Overview
-This repository documents the architecture of the graph-search project from SLE-2. It describes the system context, logical containers, components, and search flow. Confirm all names and behaviors against your actual source code before submission.
+## 1. System Title & Short Description
 
-## Goals
-- Represent a graph using an adjacency list.
-- Search from a start vertex to a goal vertex using BFS or DFS.
-- Track visited vertices to avoid repeated processing.
-- Present the search outcome and available metrics.
+The **Graph Search System** is a Python-based search system continued from SLE-2. It represents a graph using an adjacency list and searches from start node **A** to goal node **W**. The system implements both **Breadth-First Search (BFS)** and **Depth-First Search (DFS)**. It records the path, nodes expanded, and execution time for three runs of each algorithm. SLE-3 documents this system using all four levels of the C4 architecture model.
 
-## Level 1 — System context
-```mermaid
+## 2. C4 Model
+
+C4 means **Context, Container, Component, and Code**. This repository presents the same Graph Search System at four levels, from the complete system view to its main functions.
+
+---
+
+## Level 1 — Context Diagram
+
+~~~mermaid
 flowchart LR
     U[User / Student] -->|Graph, start, goal, method| S[Graph Search System]
-    S -->|Search result| U
-```
+    S -->|BFS/DFS path, nodes expanded, timing| U
+~~~
 
-## Level 2 — Container view
-```mermaid
-flowchart TB
-    U[User] -->|Input| CLI[Python command-line interface]
-    CLI -->|Search request| CORE[Search engine]
-    G[(In-memory adjacency list)] --> CORE
-    CORE -->|Result| CLI
-    CLI -->|Output| U
-```
+### Explanation
 
-## Level 3 — Component view
-```mermaid
-flowchart TB
-    INPUT[Configuration: GRAPH, START, GOAL] --> SELECT{Algorithm selection}
-    SELECT -->|BFS| BFS[bfs()]
-    SELECT -->|DFS| DFS[dfs()]
-    BFS --> VIS[Visited tracking]
-    DFS --> VIS
-    VIS --> RESULT[Result handling]
-    RESULT --> OUT[Display result]
-```
+The User/Student runs the Graph Search System and provides or selects the search configuration. The system executes BFS or DFS on the graph and returns the search path, nodes expanded, and timing information. No external database or external service is required.
 
-## Search flow
-1. Load the graph and configure start and goal vertices.
-2. Select BFS or DFS.
-3. Initialize the frontier and visited set.
-4. Remove the next vertex from the frontier.
-5. If it is the goal, finish and return the result.
-6. Otherwise, add unvisited neighbors and continue.
-7. If the frontier becomes empty, report that the goal was not found.
+---
 
-## Component responsibilities
-| Component | Responsibility |
+## Level 2 — Container Diagram
+
+~~~mermaid
+flowchart LR
+    U[User / Student] --> I[Input & Configuration]
+    I --> G[Graph Data]
+    I --> E[Search Engine]
+    G --> E
+    E --> M[Performance Measurement]
+    E --> O[Output / Result Display]
+    M --> O
+    O --> U
+~~~
+
+### Containers
+
+| Container | Responsibility |
 |---|---|
-| Graph data | Stores vertices and neighbors as an adjacency list. |
-| Configuration | Holds start, goal, and algorithm selection. |
-| BFS | Uses a FIFO queue to explore breadth-wise. |
-| DFS | Uses a LIFO stack to explore depth-wise. |
-| Visited tracking | Prevents repeated processing. |
-| Result handling | Reports the outcome and counters if implemented. |
+| **Input & Configuration** | Defines the graph-search configuration, including START, GOAL, and algorithm execution. |
+| **Graph Data** | Stores the graph as the GRAPH adjacency-list dictionary. |
+| **Search Engine** | Executes BFS and DFS and returns the path and number of expanded nodes. |
+| **Performance Measurement** | Runs each algorithm three times and measures execution time using time.perf_counter(). |
+| **Output / Result Display** | Displays paths, run times, best/average/worst time, and nodes expanded. |
 
-## Code-level mapping
-| Code element | Role |
+The container view uses five boxes, which stays within the guideline's recommended 4–7 containers.
+
+---
+
+## Level 3 — Component Diagram
+
+The **Search Engine** is the main container selected for the component-level view.
+
+~~~mermaid
+flowchart TB
+    R[run_algorithm()]
+    B[bfs()]
+    D[dfs()]
+    V[Visited Tracking]
+    F[Frontier: Queue / Stack]
+    G[Goal Test]
+    P[Path Tracking]
+    
+    R --> B
+    R --> D
+    B --> F
+    D --> F
+    B --> V
+    D --> V
+    B --> G
+    D --> G
+    B --> P
+    D --> P
+~~~
+
+### Component Responsibilities
+
+- **bfs()** — performs breadth-first graph search using a queue.
+- **dfs()** — performs depth-first graph search using a stack.
+- **Frontier** — stores nodes waiting to be explored.
+- **Visited Tracking** — prevents repeated processing of vertices.
+- **Goal Test** — checks whether the current node is W.
+- **Path Tracking** — maintains the path from A to the current node.
+- **run_algorithm()** — executes a selected algorithm three times and records timings.
+
+Only the Search Engine is expanded into components, as required by the SLE-3 guideline.
+
+---
+
+## Level 4 — Code Level Overview
+
+The code-level view contains only the main functions and data elements.
+
+| Code element | Responsibility |
 |---|---|
-| GRAPH | Graph data |
-| START / GOAL | Search configuration |
-| bfs() | Breadth-first traversal |
-| dfs() | Depth-first traversal |
-| queue / stack | Frontier data structures |
-| visited | Records discovered vertices |
+| GRAPH | Stores the graph as an adjacency list. |
+| START | Defines the starting vertex (A). |
+| GOAL | Defines the goal vertex (W). |
+| bfs(start, goal) | Performs breadth-first search. |
+| dfs(start, goal) | Performs depth-first search. |
+| run_algorithm(...) | Runs an algorithm three times and measures execution time. |
+| display_results(...) | Displays search and performance results. |
 
-## Run
-Copy the actual SLE-2 Python source into this repository. If its filename is `SLE2_BFS_VS_DFS.py`, run:
-```bash
-python SLE2_BFS_VS_DFS.py
-```
-Use the real filename if it differs.
+There are no custom classes in the SLE-2 implementation; the architecture therefore maps the actual functions and data structures instead of inventing classes.
 
-## Design decisions
-- An adjacency list stores each vertex with its neighboring vertices.
-- BFS uses a queue; DFS uses a stack.
-- A visited set helps prevent repeated visits in cyclic graphs.
-- Separate BFS and DFS functions keep the algorithms distinct and easy to compare.
+---
 
-## Submission checks
-Verify exact function names, input method, returned values, path reconstruction (if any), and measured results against your implementation. Do not add performance claims unless supported by your profiling output.
+## 3. Search Flow
 
-## Reference
-GitHub supports Mermaid diagrams in Markdown: https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/
+~~~text
+Graph + Start(A) + Goal(W)
+            |
+            v
+     Select/Run Algorithm
+          /       \
+        BFS       DFS
+        |          |
+     Queue       Stack
+        |          |
+        +----+-----+
+             |
+       Visited Tracking
+             |
+          Goal Test
+             |
+       Path + Nodes
+             |
+    Performance Measurement
+             |
+        Result Display
+~~~
+
+For the supplied SLE-2 graph, both BFS and DFS can reach the goal W through:
+
+~~~text
+A -> C -> G -> O -> W
+~~~
+
+The exact timing values are machine-dependent and should be taken from the actual program output/profile rather than assumed.
+
+---
+
+## 4. Design Decisions
+
+1. **Adjacency list:** The existing SLE-2 graph is represented as a Python dictionary of neighboring vertices.
+2. **Separate BFS and DFS:** Keeping the algorithms in separate functions makes their behavior and performance easy to compare.
+3. **Visited tracking:** A visited set prevents unnecessary repeated processing.
+4. **Three timing runs:** The existing SLE-2 implementation executes each algorithm three times and reports best, average, and worst execution time.
+5. **Simple C4 structure:** Only the Search Engine is expanded at Component level so the architecture remains readable and follows the SLE-3 guideline.
+
+---
+
+## 5. AI Contribution Note
+
+AI assistance was used to help organize the SLE-3 repository documentation, C4 architecture structure, Mermaid diagrams, and README content. The student remains responsible for checking the architecture against the actual SLE-2 source code and understanding/explaining the design.
+
+See AI_CONTRIBUTION_LOG.md for the detailed contribution record.
+
+---
+
+## 6. Repository Structure
+
+~~~text
+IAI_SLE3/
+├── README.md
+├── AI_CONTRIBUTION_LOG.md
+├── .gitignore
+├── bfs_dfs.py
+└── docs/
+    ├── architecture.md
+    └── C4_MODEL.md
+~~~
+
+### Source
+
+bfs_dfs.py is the SLE-2 BFS/DFS implementation used as the basis for this SLE-3 architecture.
+
+### Documentation
+
+- README.md — complete project and C4 overview.
+- docs/C4_MODEL.md — focused four-level C4 documentation.
+- docs/architecture.md — architecture notes and code mapping.
+- AI_CONTRIBUTION_LOG.md — AI assistance and student verification record.
+
+---
+
+## 7. Running the System
+
+Requirements:
+
+- Python 3
+- Standard-library modules used by the program (collections and time)
+
+Run:
+
+~~~bash
+python bfs_dfs.py
+~~~
+
+The program displays BFS and DFS paths, execution times for three runs, best/average/worst timing, and nodes expanded.
+
+---
+
+## 8. SLE-3 Submission Checklist
+
+- [x] System connected to SLE-2
+- [x] Level 1 — Context Diagram
+- [x] Level 2 — Container Diagram
+- [x] Level 3 — Component Diagram for one main container
+- [x] Level 4 — Code Level Overview
+- [x] Design Decisions
+- [x] AI Contribution Note
+- [x] README
+- [x] AI Contribution Log
+
+For the final Word/PDF submission, export the diagrams clearly and include PRN, name, division, date, and the required short explanations according to the faculty guideline.
+
+## Author
+
+**Rutuja Patil**
