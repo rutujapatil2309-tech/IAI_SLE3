@@ -63,14 +63,14 @@ The **Search Engine** is the main container selected for the component-level vie
 
 ~~~mermaid
 flowchart TB
-    R[run_algorithm()]
-    B[bfs()]
-    D[dfs()]
-    V[Visited Tracking]
-    F[Frontier: Queue / Stack]
-    G[Goal Test]
-    P[Path Tracking]
-    
+    R["run_algorithm()"]
+    B["bfs() - Breadth-First Search"]
+    D["dfs() - Depth-First Search"]
+    V["Visited Tracking"]
+    F["Frontier: queue for BFS, stack for DFS"]
+    G["Goal Test: is current node W?"]
+    P["Path Tracking"]
+
     R --> B
     R --> D
     B --> F
