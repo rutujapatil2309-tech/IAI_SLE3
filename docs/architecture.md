@@ -42,13 +42,13 @@ flowchart LR
 
 ~~~mermaid
 flowchart TB
-    R[run_algorithm()]
-    B[bfs()]
-    D[dfs()]
-    F[Frontier: Queue / Stack]
-    V[Visited Tracking]
-    G[Goal Test]
-    P[Path Tracking]
+    R["run_algorithm()"]
+    B["bfs() - Breadth-First Search"]
+    D["dfs() - Depth-First Search"]
+    F["Frontier: queue for BFS, stack for DFS"]
+    V["Visited Tracking"]
+    G["Goal Test: is current node W?"]
+    P["Path Tracking"]
 
     R --> B
     R --> D
