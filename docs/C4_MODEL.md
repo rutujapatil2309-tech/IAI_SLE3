@@ -14,7 +14,7 @@ The Graph Search System is the main system and the User/Student is the external 
 
 ~~~mermaid
 flowchart LR
-    U[User / Student] --> I[Input & Configuration]
+    U[User / Student] --> I[Input and Configuration]
     I --> G[Graph Data]
     I --> E[Search Engine]
     G --> E
@@ -37,13 +37,13 @@ The selected container is Search Engine.
 
 ~~~mermaid
 flowchart TB
-    R[run_algorithm()]
-    B[bfs()]
-    D[dfs()]
-    F[Frontier]
-    V[Visited Tracking]
-    G[Goal Test]
-    P[Path Tracking]
+    R["run_algorithm()"]
+    B["bfs() — Breadth-First Search"]
+    D["dfs() — Depth-First Search"]
+    F["Frontier: queue for BFS, stack for DFS"]
+    V["Visited Tracking"]
+    G["Goal Test"]
+    P["Path Tracking"]
 
     R --> B
     R --> D
@@ -58,13 +58,13 @@ flowchart TB
 ~~~
 
 Components:
-- bfs() — queue-based breadth-first search.
-- dfs() — stack-based depth-first search.
+- `bfs()` — queue-based breadth-first search.
+- `dfs()` — stack-based depth-first search.
 - Frontier — queue for BFS and stack for DFS.
 - Visited Tracking — records processed vertices.
-- Goal Test — checks whether the current node is W.
+- Goal Test — checks whether the current node is the goal, W.
 - Path Tracking — maintains the current path.
-- run_algorithm() — executes the selected search and measures timing.
+- `run_algorithm()` — executes the selected search and measures timing.
 
 ## C4 Level 4 — Code
 
